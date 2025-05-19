@@ -1,0 +1,9 @@
+[package]
+name = "tinympc"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+env_logger = "0.11"
+log = "0.4.27"
+nalgebra = { version = "0.33.2", features = ["rkyv-serialize"] }
