@@ -29,10 +29,10 @@ fn main() {
         NX,
         NU,
         NH,
-        DMatrix::from_element(NX, NH, -0.5),
-        DMatrix::from_element(NX, NH, 0.5),
-        DMatrix::from_element(NU, NH - 1, -5.0),
-        DMatrix::from_element(NU, NH - 1, 5.0),
+        DMatrix::from_element(NX, NH, -5.0),
+        DMatrix::from_element(NX, NH, 5.0),
+        DMatrix::from_element(NU, NH - 1, -0.5),
+        DMatrix::from_element(NU, NH - 1, 0.5),
     );
 
     // Configure settings
@@ -65,15 +65,11 @@ fn main() {
         mpc.set_x0(x.clone());
 
         // 2、 Solve MPC problem
-        if !mpc.solve() {
-            debug!("Not resolved");
-        }
+        mpc.solve();
 
         // Iterate simulation
         let u = mpc.get_u();
         x = &a * x + &b * &u;
-
-        // debug!("A*{} + B*{}", x, u);
 
         total_iters += mpc.get_num_iters();
     }

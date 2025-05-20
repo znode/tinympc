@@ -1,5 +1,5 @@
 use log::debug;
-use nalgebra::{RealField, Scalar, SimdRealField, convert};
+use nalgebra::{RealField, Scalar, SimdRealField};
 
 use crate::TinySolver;
 
@@ -9,7 +9,7 @@ where
 {
     /// Update linear terms from Riccati backward pass
     pub(crate) fn backward_pass_grad(&mut self) {
-        for i in (0..self.work.N - 2).rev() {
+        for i in (0..self.work.N - 1).rev() {
             self.work.d.set_column(
                 i,
                 &(&self.cache.Quu_inv
@@ -76,22 +76,24 @@ where
 
     /// Update linear control cost terms in the Riccati feedback using the changing slack and dual variables from ADMM
     pub(crate) fn update_linear_cost(&mut self) {
+        // r
         self.work.Uref.column_iter().enumerate().for_each(|(i, u)| {
             self.work.r.set_column(i, &(-u.component_mul(&self.work.R)));
         });
         self.work.r -= (&self.work.znew - &self.work.y).scale(self.cache.rho);
 
+        // q
         self.work.Xref.column_iter().enumerate().for_each(|(i, x)| {
             self.work.q.set_column(i, &(-x.component_mul(&self.work.Q)));
         });
         self.work.q -= (&self.work.vnew - &self.work.g).scale(self.cache.rho);
 
-        //FIXME: Maybe wrong
-        // let p = -(self.work.Xref.column(self.work.N - 1).transpose() * &self.cache.Pinf);
-        let p = -(&self.cache.Pinf * self.work.Xref.column(self.work.N - 1))
-            - self.work.vnew.column(self.work.N - 1).scale(self.cache.rho)
-            - self.work.g.column(self.work.N - 1);
-        // debug!("p {}", p);
+        // p
+        let p =
+            -(self.work.Xref.column(self.work.N - 1).transpose() * &self.cache.Pinf).transpose();
+        let p = p
+            - (self.work.vnew.column(self.work.N - 1) - self.work.g.column(self.work.N - 1))
+                .scale(self.cache.rho);
         self.work.p.set_column(self.work.N - 1, &p);
     }
 
@@ -147,9 +149,6 @@ where
 
             // Update linear control cost terms using reference trajectory, duals, and slack variables
             self.update_linear_cost();
-            // debug!("r = {}", self.work.r);
-            // debug!("q = {}", self.work.q);
-            // debug!("p = {}", self.work.p);
 
             self.work.iter += 1;
 
@@ -196,7 +195,7 @@ where
                 self.solution.u = self.work.znew.clone();
 
                 debug!("Solver converged in {} iterations", self.work.iter);
-                return false;
+                return true;
             }
 
             // Save previous slack variables
@@ -210,6 +209,6 @@ where
         self.solution.solved = 0;
         self.solution.x = self.work.vnew.clone();
         self.solution.u = self.work.znew.clone();
-        true
+        false
     }
 }
