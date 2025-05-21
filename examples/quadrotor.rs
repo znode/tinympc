@@ -57,7 +57,7 @@ fn main() {
     for k in 0..500 {
         debug!(
             "At step {k:3} in {:4} iterations, got tracking error : {:05.4}",
-            mpc.get_num_iters(),
+            mpc.num_iters(),
             (&x - &reference).norm(),
         );
 
@@ -68,10 +68,10 @@ fn main() {
         mpc.solve();
 
         // Iterate simulation
-        let u = mpc.get_u();
+        let u = mpc.u();
         x = &a * x + &b * &u;
 
-        total_iters += mpc.get_num_iters();
+        total_iters += mpc.num_iters();
     }
 
     println!("Total iterations: {total_iters}");

@@ -436,32 +436,46 @@ where
         self.work.Uref = u_ref;
     }
 
-    pub fn get_num_iters(&self) -> usize {
+    pub fn num_iters(&self) -> usize {
         self.work.iter
     }
 
     /// Get the system state `x` for the time `o`
-    pub fn get_x_at(&self, i: usize) -> DVector<F> {
+    pub fn x_at(&self, i: usize) -> DVector<F> {
         self.work.x.column(i).into()
     }
 
     /// Get the system input `u` for the time `o`
-    pub fn get_u_at(&self, i: usize) -> DVector<F> {
+    pub fn u_at(&self, i: usize) -> DVector<F> {
         self.work.u.column(i).into()
     }
 
     /// Get the system input `u` for the current time
-    pub fn get_u(&self) -> DVector<F> {
-        self.get_u_at(0)
+    pub fn u(&self) -> DVector<F> {
+        self.u_at(0)
     }
 
     /// Get reference to matrix containing state predictions
-    pub fn get_x_matrix(&self) -> &DMatrix<F> {
+    pub fn x_matrix(&self) -> &DMatrix<F> {
         &self.work.x
     }
 
     /// Get reference to matrix containing input predictions
-    pub fn get_u_matrix(&self) -> &DMatrix<F> {
+    pub fn u_matrix(&self) -> &DMatrix<F> {
         &self.work.u
+    }
+
+    /// Reset dual variables
+    pub fn reset_y(&mut self) {
+        self.work.y = DMatrix::zeros(self.work.Nu, self.work.N - 1);
+    }
+
+    /// Reset dual variables
+    pub fn reset_g(&mut self) {
+        self.work.g = DMatrix::zeros(self.work.Nx, self.work.N);
+    }
+
+    pub fn x_ref(&self) -> DVector<F> {
+        self.work.Xref.column(0).into()
     }
 }
