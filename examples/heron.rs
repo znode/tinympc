@@ -2,13 +2,6 @@ use log::debug;
 use nalgebra::{DMatrix, DVector, vector};
 use tinympc::TinySolver;
 
-/*
-
-    This example is based off the following TinyMPC example
-    https://github.com/TinyMPC/TinyMPC/blob/main/examples/example_quadrotor_hovering.cpp
-
-*/
-
 const NU: usize = 2;
 const NX: usize = 3;
 const NH: usize = 10;
@@ -48,11 +41,11 @@ fn main() {
 
     mpc.set_x_ref(xref.clone());
 
-    // Dynamic state vector
-    let mut x = DVector::from_vec(vec![0.0, 1.0, 0.0]);
+    // Dynamic state vector Nx
+    let mut x = DVector::from_vec(vec![1.0, 1.0, 1.0]);
 
     let mut total_iters = 0;
-    for k in 0..500 {
+    for k in 0..5000 {
         debug!(
             "At step {k:3} in {:4} iterations, got tracking error : {:05.4}",
             mpc.num_iters(),
@@ -77,26 +70,18 @@ fn main() {
 }
 
 #[rustfmt::skip]
-const A : [f64;9] = [
-    1.00, 0.00, 0.00,
-    0.00, 1.00, 2.00,
-    0.00, 0.00, 1.00,
+const A:[f64; 9] = [
+     1.0, 0.0, 0.0,
+     0.0, 1.0, 0.5,
+     0.0, 0.0, 1.0,
 ];
 
 //20Hz
-// #[rustfmt::skip]
-// const B : [f64;6] = [
-//     0.025, 0.025,
-//     -0.01785714, 0.01785714,
-//     -0.07142857, 0.07142857
-// ];
-
-//5Hz
 #[rustfmt::skip]
 const B : [f64;6] = [
-    0.1, 0.1,
-    -0.28571429, 0.28571429,
-    -0.28571429, 0.28571429
+    0.025, 0.025,
+    -0.01785714, 0.01785714,
+    -0.07142857, 0.07142857
 ];
 
 #[rustfmt::skip]

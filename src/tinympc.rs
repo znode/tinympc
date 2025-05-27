@@ -4,7 +4,7 @@
 
 // Rust port of TinyMPC["https://github.com/TinyMPC/TinyMPC"]
 
-use log::{debug, warn};
+use log::{trace, warn};
 use nalgebra::{
     DMatrix, DVector, RealField, SMatrix, SVector, Scalar, SimdRealField, SimdValue, convert,
     matrix, zero,
@@ -79,11 +79,11 @@ where
         let R1 = R + DMatrix::<F>::identity(Nu, Nu).scale(rho);
 
         // Printing
-        debug!("A = {}", Adyn);
-        debug!("B = {}", Bdyn);
-        debug!("Q = {}", Q1);
-        debug!("R = {}", R1);
-        debug!("rho = {} ", rho);
+        trace!("A = {}", Adyn);
+        trace!("B = {}", Bdyn);
+        trace!("Q = {}", Q1);
+        trace!("R = {}", R1);
+        trace!("rho = {} ", rho);
 
         // Riccati recursion to get Kinf, Pinf
         let mut Ktp1 = DMatrix::zeros(Nu, Nx);
@@ -102,7 +102,7 @@ where
             Pinf = &Q1 + &At * &Ptp1 * (&Adyn - &Bdyn * &Kinf);
             // if Kinf converges, break
             if ((&Kinf - &Ktp1).abs().max() < convert(1e-5)) {
-                debug!("Kinf converged after {} iterations", i + 1);
+                trace!("Kinf converged after {} iterations", i + 1);
                 break;
             }
             Ktp1 = Kinf.clone();
@@ -113,11 +113,11 @@ where
         let Quu_inv = (&R1 + &Bt * &Pinf * &Bdyn).try_inverse().unwrap();
         let AmBKt = (&Adyn - &Bdyn * &Kinf).transpose();
 
-        debug!("Kinf = {}", Kinf);
-        debug!("Pinf = {}", Pinf);
-        debug!("Quu_inv = {}", Quu_inv);
-        debug!("AmBKt = {}", AmBKt);
-        debug!("Precomputation finished!");
+        trace!("Kinf = {}", Kinf);
+        trace!("Pinf = {}", Pinf);
+        trace!("Quu_inv = {}", Quu_inv);
+        trace!("AmBKt = {}", AmBKt);
+        trace!("Precomputation finished!");
 
         Self {
             rho,
@@ -475,7 +475,11 @@ where
         self.work.g = DMatrix::zeros(self.work.Nx, self.work.N);
     }
 
+    pub fn x_ref_at(&self, i: usize) -> DVector<F> {
+        self.work.Xref.column(i).into()
+    }
+
     pub fn x_ref(&self) -> DVector<F> {
-        self.work.Xref.column(0).into()
+        self.x_ref_at(0)
     }
 }
