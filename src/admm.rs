@@ -1,7 +1,10 @@
 use log::debug;
 use nalgebra::{RealField, Scalar, SimdRealField};
 
-use crate::TinySolver;
+use crate::{
+    TinySolver,
+    rho_benchmark::{RhoAdapter, RhoBenchmarkResult},
+};
 
 impl<F> TinySolver<F>
 where
@@ -126,18 +129,18 @@ where
         self.work.iter = 0;
 
         // Setup for adaptive rho
-        // RhoAdapter adapter;
-        // adapter.rho_min = self.settings.adaptive_rho_min;
-        // adapter.rho_max = self.settings.adaptive_rho_max;
-        // adapter.clip = self.settings.adaptive_rho_enable_clipping;
+        let mut adapter = RhoAdapter::default();
+        adapter.rho_min = self.settings.adaptive_rho_min;
+        adapter.rho_max = self.settings.adaptive_rho_max;
+        adapter.clip = self.settings.adaptive_rho_enable_clipping;
 
-        // RhoBenchmarkResult rho_result;
+        let mut rho_result = RhoBenchmarkResult::default();
 
         // Store previous values for residuals
         let mut v_prev = self.work.vnew.clone();
         let mut z_prev = self.work.znew.clone();
 
-        for _ in 0..self.settings.max_iter {
+        for i in 0..self.settings.max_iter {
             // Solve linear system with Riccati and roll out to get new trajectory
             self.forward_pass();
 
@@ -154,30 +157,29 @@ where
 
             if self.settings.adaptive_rho {
                 // Calculate residuals for adaptive rho
-                // let pri_res_input = (self.work.u - self.work.znew).abs().max();
-                // let pri_res_state = (self.work.x - self.work.vnew).abs().max();
-                // let dua_res_input = self.cache.rho * (self.work.znew - z_prev).abs().max();
-                // let dua_res_state = self.cache.rho * (self.work.vnew - v_prev).abs().max();
+                let pri_res_input = (&self.work.u - &self.work.znew).abs().max();
+                let pri_res_state = (&self.work.x - &self.work.vnew).abs().max();
+                let dua_res_input = self.cache.rho * (&self.work.znew - &z_prev).abs().max();
+                let dua_res_state = self.cache.rho * (&self.work.vnew - &v_prev).abs().max();
 
                 // Update rho every 5 iterations
-                // if (i > 0 && i % 5 == 0) {
-                //     benchmark_rho_adaptation(
-                //         &adapter,
-                //         self.work.x,
-                //         self.work.u,
-                //         self.work.vnew,
-                //         self.work.znew,
-                //         self.work.g,
-                //         self.work.y,
-                //         self.cache,
-                //         self.work,
-                //         self.work.N,
-                //         &rho_result,
-                //     );
+                if i > 0 && i % 5 == 0 {
+                    adapter.benchmark_rho_adaptation(
+                        &self.work.x,
+                        &self.work.u,
+                        &self.work.vnew,
+                        &self.work.znew,
+                        &self.work.g,
+                        &self.work.y,
+                        &mut self.cache,
+                        &self.work,
+                        self.work.N,
+                        &mut rho_result,
+                    );
 
-                // Update matrices using Taylor expansion
-                // update_matrices_with_derivatives(&self.cache, rho_result.final_rho);
-                // }
+                    // Update matrices using Taylor expansion
+                    adapter.update_matrices_with_derivatives(&mut self.cache, rho_result.final_rho);
+                }
             }
 
             // Store previous values for next iteration
