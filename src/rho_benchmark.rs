@@ -1,3 +1,5 @@
+use std::time::SystemTime;
+
 use nalgebra::{DMatrix, RealField, Scalar, SimdRealField, convert};
 
 use crate::tinympc::{TinyCache, TinyWorkspace};
@@ -383,5 +385,8 @@ where
 }
 
 pub fn micros() -> u32 {
-    0
+    SystemTime::now()
+        .duration_since(SystemTime::UNIX_EPOCH)
+        .unwrap()
+        .subsec_micros()
 }
