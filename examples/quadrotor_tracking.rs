@@ -2,14 +2,14 @@
 ///
 /// This script is just to show how to use the library, the data for this example is not tuned for our Crazyflie demo. Check the firmware code for more details.
 ///
-/// - NSTATES = 12
-/// - NINPUTS = 4
-/// - NHORIZON = anything you want
-/// - NTOTAL = 301 if using reference trajectory from trajectory_data/
-/// States: x (m), y, z, phi, theta, psi, dx, dy, dz, dphi, dtheta, dpsi
-/// phi, theta, psi are NOT Euler angles, they are Rodiguez parameters
-/// check this paper for more details: https://ieeexplore.ieee.org/document/9326337
-/// Inputs: u1, u2, u3, u4 (motor thrust 0-1, order from Crazyflie)
+///     - NSTATES = 12
+///     - NINPUTS = 4
+///     - NHORIZON = anything you want
+///     - NTOTAL = 301 if using reference trajectory from trajectory_data/
+///     States: x (m), y, z, phi, theta, psi, dx, dy, dz, dphi, dtheta, dpsi
+///     phi, theta, psi are NOT Euler angles, they are Rodiguez parameters
+///     check this paper for more details: https://ieeexplore.ieee.org/document/9326337
+///     Inputs: u1, u2, u3, u4 (motor thrust 0-1, order from Crazyflie)
 ///
 use log::debug;
 use nalgebra::{DMatrix, DVector};
@@ -136,7 +136,7 @@ const R: [f64; 4] = [4.0000000, 4.0000000, 4.0000000, 4.0000000];
 const RHO: f64 = 5.0;
 
 #[rustfmt::skip]
-const XREF_DATA: [f64; NTOTAL * NSTATES] = [
+static XREF_DATA: [f64; NTOTAL * NSTATES] = [
     0.0000000, 0.0000000, 1.0000000, 0.0000000, 0.0000000, 0.0000000, 0.0000000, 0.2666667, 0.0000000, 0.0000000, 0.0000000, 0.0000000,
     0.0000000, 0.0133333, 1.0000000, 0.0000000, 0.0000000, 0.0000000, 0.0000000, 0.2666667, 0.0000000, 0.0000000, 0.0000000, 0.0000000,
     0.0000000, 0.0266667, 1.0000000, 0.0000000, 0.0000000, 0.0000000, 0.0000000, 0.2666667, 0.0000000, 0.0000000, 0.0000000, 0.0000000,

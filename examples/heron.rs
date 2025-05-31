@@ -49,7 +49,7 @@ fn main() {
         debug!(
             "At step {k:3} in {:4} iterations, got tracking error : {:05.4}",
             mpc.num_iters(),
-            (&x - &reference).norm(),
+            (&x - reference).norm(),
         );
 
         // 1、 Update measurement

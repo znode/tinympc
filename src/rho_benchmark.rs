@@ -1,3 +1,7 @@
+#![allow(non_snake_case)]
+#![allow(non_upper_case_globals)]
+#![allow(clippy::too_many_arguments)]
+
 use std::time::SystemTime;
 
 use nalgebra::{DMatrix, RealField, Scalar, SimdRealField, convert};

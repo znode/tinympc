@@ -1,6 +1,7 @@
 #![allow(non_snake_case)]
 #![allow(non_upper_case_globals)]
 #![allow(unused)]
+#![allow(clippy::too_many_arguments)]
 
 // Rust port of TinyMPC["https://github.com/TinyMPC/TinyMPC"]
 
@@ -45,7 +46,6 @@ pub struct TinyCache<F> {
     /// Infinite-time horizon LQR Hessian
     pub Pinf: DMatrix<F>, // Nx * Nx
 
-    ///
     pub Quu_inv: DMatrix<F>, // Nu * Nu
 
     /// Precomputed `(A - B * Klqr)^T`

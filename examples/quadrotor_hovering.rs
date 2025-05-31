@@ -1,14 +1,14 @@
 /// Quadrotor hovering example
-
+///
 /// This script is just to show how to use the library, the data for this example is not tuned for our Crazyflie demo. Check the firmware code for more details.
-
-/// - NSTATES = 12
-/// - NINPUTS = 4
-/// - NHORIZON = anything you want
-/// States: x (m), y, z, phi, theta, psi, dx, dy, dz, dphi, dtheta, dpsi
-/// phi, theta, psi are NOT Euler angles, they are Rodiguez parameters
-/// check this paper for more details: https://ieeexplore.ieee.org/document/9326337
-/// Inputs: u1, u2, u3, u4 (motor thrust 0-1, order from Crazyflie)
+///
+///     - NSTATES = 12
+///     - NINPUTS = 4
+///     - NHORIZON = anything you want
+///     States: x (m), y, z, phi, theta, psi, dx, dy, dz, dphi, dtheta, dpsi
+///     phi, theta, psi are NOT Euler angles, they are Rodiguez parameters
+///     check this paper for more details: https://ieeexplore.ieee.org/document/9326337
+///     Inputs: u1, u2, u3, u4 (motor thrust 0-1, order from Crazyflie)
 ///
 use log::debug;
 use nalgebra::{DMatrix, DVector, vector};
@@ -63,7 +63,7 @@ fn main() {
         debug!(
             "At step {k:3} in {:4} iterations, got tracking error : {:05.4}",
             mpc.num_iters(),
-            (&x - &reference).norm(),
+            (&x - reference).norm(),
         );
 
         // 1、 Update measurement

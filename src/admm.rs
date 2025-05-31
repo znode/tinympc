@@ -129,10 +129,12 @@ where
         self.work.iter = 0;
 
         // Setup for adaptive rho
-        let mut adapter = RhoAdapter::default();
-        adapter.rho_min = self.settings.adaptive_rho_min;
-        adapter.rho_max = self.settings.adaptive_rho_max;
-        adapter.clip = self.settings.adaptive_rho_enable_clipping;
+        let mut adapter = RhoAdapter {
+            rho_min: self.settings.adaptive_rho_min,
+            rho_max: self.settings.adaptive_rho_max,
+            clip: self.settings.adaptive_rho_enable_clipping,
+            ..Default::default()
+        };
 
         let mut rho_result = RhoBenchmarkResult::default();
 
@@ -157,10 +159,10 @@ where
 
             if self.settings.adaptive_rho {
                 // Calculate residuals for adaptive rho
-                let pri_res_input = (&self.work.u - &self.work.znew).abs().max();
-                let pri_res_state = (&self.work.x - &self.work.vnew).abs().max();
-                let dua_res_input = self.cache.rho * (&self.work.znew - &z_prev).abs().max();
-                let dua_res_state = self.cache.rho * (&self.work.vnew - &v_prev).abs().max();
+                let _pri_res_input = (&self.work.u - &self.work.znew).abs().max();
+                let _pri_res_state = (&self.work.x - &self.work.vnew).abs().max();
+                let _dua_res_input = self.cache.rho * (&self.work.znew - &z_prev).abs().max();
+                let _dua_res_state = self.cache.rho * (&self.work.vnew - &v_prev).abs().max();
 
                 // Update rho every 5 iterations
                 if i > 0 && i % 5 == 0 {
