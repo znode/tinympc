@@ -102,7 +102,7 @@ where
 
     /// Check for termination condition by evaluating whether the largest absolute primal and dual residuals for states and inputs are below threhold.
     pub(crate) fn termination_condition(&mut self) -> bool {
-        if self.work.iter % self.settings.check_termination == 0 {
+        if self.work.iter.is_multiple_of(self.settings.check_termination) {
             // Calculate residuals on slack variables
             self.work.primal_residual_state = (&self.work.x - &self.work.vnew).abs().max();
             self.work.dual_residual_state =
